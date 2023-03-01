@@ -306,7 +306,7 @@ namespace MaterialDesignThemes.Wpf
             // thus we start with the value Min+1 for the values of the rating buttons.
             int start = IsFractionalValueEnabled ? Min + 1 : Min;
 
-            bool InvertIteration = InvertDirection && Orientation == Orientation.Horizontal;
+            bool InvertIteration = InvertDirection && Orientation == Orientation.Vertical;
 
             for (int i = (InvertIteration ? Max : start); (InvertIteration ? i >= start : i <= Max); i += (InvertIteration ? -1 : 1))
             {
