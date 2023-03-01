@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MaterialDesignThemes.Wpf
 {
@@ -65,6 +66,15 @@ namespace MaterialDesignThemes.Wpf
         {
             get => (int)GetValue(MaxProperty);
             set => SetValue(MaxProperty, value);
+        }
+
+        public static readonly DependencyProperty InvertDirectionProperty = DependencyProperty.Register(
+           nameof(InvertDirection), typeof(bool), typeof(RatingBar), new PropertyMetadata(false, InvertDirectionPropertyChangedCallback));
+
+        public bool InvertDirection
+        {
+            get => (bool)GetValue(InvertDirectionProperty);
+            set => SetValue(InvertDirectionProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsFractionalValueEnabledPropertyKey = DependencyProperty.RegisterReadOnly(
@@ -272,6 +282,12 @@ namespace MaterialDesignThemes.Wpf
             ratingBar.RebuildButtons();
         }
 
+        private static void InvertDirectionPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var ratingBar = (RatingBar)dependencyObject;
+            ratingBar.RebuildButtons();
+        }
+
         private static object MaxPropertyCoerceValueCallback(DependencyObject d, object baseValue)
         {
             var ratingBar = (RatingBar)d;
@@ -289,7 +305,10 @@ namespace MaterialDesignThemes.Wpf
             // When fractional values are enabled, the first rating button represents the value Min when not selected at all and Min+1 when fully selected;
             // thus we start with the value Min+1 for the values of the rating buttons.
             int start = IsFractionalValueEnabled ? Min + 1 : Min;
-            for (int i = start; i <= Max; i++)
+
+            bool InvertIteration = InvertDirection && Orientation == Orientation.Horizontal;
+
+            for (int i = (InvertIteration ? Max : start); (InvertIteration ? i >= start : i <= Max); i += (InvertIteration ? -1 : 1))
             {
                 var ratingBarButton = new RatingBarButton
                 {
